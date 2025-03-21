@@ -1,0 +1,35 @@
+from pyzbar.pyzbar import decode
+import cv2
+
+# Functie om een barcode te scannen van een afbeelding
+def scan_barcode(image_path):
+    # Laad de afbeelding met OpenCV
+    image = cv2.imread(image_path)
+    
+    # Decodeer de barcodes in de afbeelding
+    barcodes = decode(image)
+    
+    for barcode in barcodes:
+        # Verkrijg de gegevens van de barcode
+        barcode_data = barcode.data.decode("utf-8")
+        barcode_type = barcode.type
+        
+        # Toon de barcode gegevens
+        print(f"Barcode Data: {barcode_data}")
+        print(f"Barcode Type: {barcode_type}")
+        
+        # Teken een rechthoek rond de barcode
+        rect_points = barcode.polygon
+        if len(rect_points) == 4:
+            pts = [tuple(point) for point in rect_points]
+            cv2.polylines(image, [np.array(pts, dtype=np.int32)], True, (0, 255, 0), 2)
+        else:
+            cv2.rectangles(image, rect_points, (0, 255, 0), 2)
+
+    # Toon de afbeelding met de barcode gemarkeerd
+    cv2.imshow("Barcode Scanner", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+# Scannen van een afbeelding met een barcode
+scan_barcode('barcode_1001.png')
