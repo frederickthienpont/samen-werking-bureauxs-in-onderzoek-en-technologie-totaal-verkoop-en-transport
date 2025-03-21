@@ -1,0 +1,20 @@
+import barcode
+from barcode.writer import ImageWriter
+
+# Functie om een barcode te genereren voor een product
+def generate_barcode(product_id, output_file):
+    # Kies een barcode type (EAN13 bijvoorbeeld)
+    ean = barcode.get_barcode_class('ean13')  # Gebruik bijvoorbeeld EAN-13 voor producten
+    product_code = str(product_id).zfill(12)  # Zorg ervoor dat het 12 cijfers zijn
+    barcode_obj = ean(product_code, writer=ImageWriter())
+    
+    # Genereer de barcode en sla deze op als een afbeelding
+    barcode_obj.save(output_file)
+    print(f"Barcode voor product {product_id} is opgeslagen als {output_file}.png")
+
+# Voorbeeld van barcodes genereren voor een lijst van producten
+product_ids = [1001, 1002, 1003, 1004]
+
+for product_id in product_ids:
+    generate_barcode(product_id, f"barcode_{product_id}")
+
