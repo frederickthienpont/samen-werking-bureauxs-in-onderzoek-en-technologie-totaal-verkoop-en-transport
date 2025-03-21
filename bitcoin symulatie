@@ -1,0 +1,18 @@
+import bitcoin
+
+# Genereren van een nieuw Bitcoin adres
+private_key = bitcoin.random_key()
+public_key = bitcoin.privtopub(private_key)
+address = bitcoin.pubkey_to_address(public_key)
+
+# Simulatie van een Bitcoin-transactie
+def send_bitcoin(from_address, to_address, amount):
+    print(f"Transactie van {from_address} naar {to_address}")
+    print(f"Bedrag: {amount} BTC")
+    print("Transactie is succesvol verzonden!")
+
+# Voorbeeld van het uitvoeren van een transactie
+from_address = address  # Dit zou normaal een gebruikersadres zijn
+to_address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"  # Voorbeeld van een Bitcoin-adres
+amount = 0.05  # 0.05 BTC
+send_bitcoin(from_address, to_address, amount)
