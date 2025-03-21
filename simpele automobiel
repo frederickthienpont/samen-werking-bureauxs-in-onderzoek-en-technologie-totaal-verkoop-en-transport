@@ -1,0 +1,28 @@
+class Vehicle:
+    def __init__(self, license_plate, make, model, year, status="Available"):
+        self.license_plate = license_plate
+        self.make = make
+        self.model = model
+        self.year = year
+        self.status = status
+
+    def display_info(self):
+        print(f"Kenteken: {self.license_plate}")
+        print(f"Merk: {self.make}")
+        print(f"Model: {self.model}")
+        print(f"Jaar: {self.year}")
+        print(f"Status: {self.status}")
+
+    def update_status(self, status):
+        self.status = status
+        print(f"Voertuig {self.license_plate} status is veranderd naar: {self.status}")
+
+# Voorbeeld van voertuigen
+vehicle1 = Vehicle("AB-123-CD", "Toyota", "Corolla", 2020)
+vehicle2 = Vehicle("EF-456-GH", "BMW", "X5", 2022)
+
+vehicle1.display_info()
+vehicle1.update_status("In onderhoud")
+
+vehicle2.display_info()
+vehicle2.update_status("In gebruik")
