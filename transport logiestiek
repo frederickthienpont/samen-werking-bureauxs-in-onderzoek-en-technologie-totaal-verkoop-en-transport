@@ -1,0 +1,30 @@
+class Transport:
+    def __init__(self, id, origin, destination, cargo, weight):
+        self.id = id
+        self.origin = origin
+        self.destination = destination
+        self.cargo = cargo
+        self.weight = weight
+        self.status = "In afwachting"
+
+    def update_status(self, status):
+        self.status = status
+        print(f"Status van transport {self.id} is bijgewerkt naar: {self.status}")
+
+    def display_info(self):
+        print(f"Transport ID: {self.id}")
+        print(f"Oorsprong: {self.origin}")
+        print(f"Bestemming: {self.destination}")
+        print(f"Goederen: {self.cargo}")
+        print(f"Gewicht: {self.weight} kg")
+        print(f"Status: {self.status}")
+        
+
+# Voorbeeld van transporten
+transport1 = Transport(1, "Amsterdam", "Rotterdam", "Fietsen", 500)
+transport1.display_info()
+transport1.update_status("In transport")
+
+transport2 = Transport(2, "Berlin", "Munich", "Auto Onderdelen", 1500)
+transport2.display_info()
+transport2.update_status("Afgeleverd")
