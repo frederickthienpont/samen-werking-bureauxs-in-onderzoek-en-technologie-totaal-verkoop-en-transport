@@ -1,0 +1,57 @@
+import uuid
+from datetime import datetime
+
+class Betaling:
+    def __init__(self, ontvanger, bedrag, datum, id=None):
+        self.id = id if id else str(uuid.uuid4())  # Unieke transactie-ID
+        self.ontvanger = ontvanger
+        self.bedrag = bedrag
+        self.datum = datum
+        self.status = "Verwerkt"
+    
+    def __str__(self):
+        return f"Betaling ID: {self.id}, Ontvanger: {self.ontvanger}, Bedrag: {self.bedrag}, Datum: {self.datum}, Status: {self.status}"
+
+class Betalingssysteem:
+    def __init__(self):
+        self.transacties = {}
+    
+    def maak_betaling(self, ontvanger, bedrag):
+        # Maak een betaling aan
+        datum = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        betaling = Betaling(ontvanger, bedrag, datum)
+        # Opslaan van de betaling in het systeem
+        self.transacties[betaling.id] = betaling
+        return betaling.id
+    
+    def controleer_betaling(self, betaling_id):
+        # Controleren of betaling bestaat en geldig is
+        if betaling_id in self.transacties:
+            betaling = self.transacties[betaling_id]
+            return f"Betaling is geldig: {betaling}"
+        else:
+            return "Betaling niet gevonden of ongeldig."
+    
+    def annuleer_betaling(self, betaling_id):
+        # Annuleer betaling indien betwist
+        if betaling_id in self.transacties:
+            betaling = self.transacties[betaling_id]
+            betaling.status = "Geannuleerd"
+            return f"Betaling geannuleerd: {betaling}"
+        else:
+            return "Betaling niet gevonden om te annuleren."
+
+# Voorbeeld van het betalingssysteem
+systeem = Betalingssysteem()
+
+# Maak een betaling
+betaling_id = systeem.maak_betaling("Jan Jansen", 100.00)
+
+# Controleer betaling
+print(systeem.controleer_betaling(betaling_id))
+
+# Annuleer betaling (in geval van betwisting)
+print(systeem.annuleer_betaling(betaling_id))
+
+# Controleer betaling na annulering
+print(systeem.controleer_betaling(betaling_id))
