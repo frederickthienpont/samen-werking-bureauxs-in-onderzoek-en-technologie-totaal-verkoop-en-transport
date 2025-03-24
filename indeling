@@ -1,0 +1,63 @@
+import json
+import os
+
+# Pad naar het configuratiebestand
+CONFIG_FILE = "eenheden_config.json"
+
+def laad_config():
+    """Laad de bestaande configuratie of maak een nieuwe."""
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, "r") as file:
+            return json.load(file)
+    else:
+        return {}
+
+def opslaan_config(config):
+    """Sla de configuratie op naar het bestand."""
+    with open(CONFIG_FILE, "w") as file:
+        json.dump(config, file, indent=4)
+    print(f"Configuratie opgeslagen in {CONFIG_FILE}.")
+
+def eenheid_toevoegen(eenheid, waarde):
+    """Voeg een nieuwe eenheid en waarde toe of werk een bestaande bij."""
+    config = laad_config()
+    config[eenheid] = waarde
+    opslaan_config(config)
+
+def eenheid_weergeven():
+    """Toon alle eenheden en waarden."""
+    config = laad_config()
+    if config:
+        print("Huidige eenheden en waarden:")
+        for eenheid, waarde in config.items():
+            print(f"- {eenheid}: {waarde}")
+    else:
+        print("Geen eenheden gevonden. Voeg nieuwe eenheden toe.")
+
+# Hoofdprogramma
+def main():
+    while True:
+        print("\n1. Voeg een eenheid toe")
+        print("2. Bekijk eenheden")
+        print("3. Stop")
+        keuze = input("Maak een keuze: ")
+        
+        if keuze == "1":
+            eenheid = input("Geef de eenheid (bijv. meter, kilogram): ")
+            waarde = input("Geef de waarde (bijv. 1.0, 100): ")
+            try:
+                waarde = float(waarde)
+            except ValueError:
+                print("Waarde moet een getal zijn. Probeer opnieuw.")
+                continue
+            eenheid_toevoegen(eenheid, waarde)
+        elif keuze == "2":
+            eenheid_weergeven()
+        elif keuze == "3":
+            print("Programma gestopt.")
+            break
+        else:
+            print("Ongeldige keuze. Probeer opnieuw.")
+
+if __name__ == "__main__":
+    main()
