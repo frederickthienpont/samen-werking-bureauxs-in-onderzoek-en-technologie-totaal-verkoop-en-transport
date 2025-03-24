@@ -1,0 +1,107 @@
+import uuid
+from datetime import datetime
+
+class Betaling:
+    def __init__(self, ontvanger, bedrag, datum, id=None, verzender=None):
+        self.id = id if id else str(uuid.uuid4())  # Unieke transactie-ID
+        self.ontvanger = ontvanger
+        self.verzender = verzender
+        self.bedrag = bedrag
+        self.datum = datum
+        self.status = "Verwerkt"
+        self.betwist = False  # Aanvullende status voor betwisting
+
+    def __str__(self):
+        return f"Betaling ID: {self.id}, Verzender: {self.verzender}, Ontvanger: {self.ontvanger}, Bedrag: {self.bedrag}, Datum: {self.datum}, Status: {self.status}, Betwist: {self.betwist}"
+
+class Betalingssysteem:
+    def __init__(self):
+        self.transacties = {}
+        self.gebruikers_saldo = {}  # Gebruikerssaldo's bijhouden (verzender en ontvanger)
+    
+    def voeg_gebruiker_toe(self, naam, saldo=0):
+        # Gebruiker toevoegen met startbedrag
+        self.gebruikers_saldo[naam] = saldo
+    
+    def maak_betaling(self, verzender, ontvanger, bedrag):
+        if verzender not in self.gebruikers_saldo or ontvanger not in self.gebruikers_saldo:
+            return "Een van de gebruikers bestaat niet."
+        
+        if self.gebruikers_saldo[verzender] < bedrag:
+            return "Verzender heeft onvoldoende saldo."
+        
+        datum = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        betaling = Betaling(ontvanger, bedrag, datum, verzender)
+        
+        # Verminder saldo van de verzender en verhoog saldo van de ontvanger
+        self.gebruikers_saldo[verzender] -= bedrag
+        self.gebruikers_saldo[ontvanger] += bedrag
+        
+        # Opslaan van de betaling in het systeem
+        self.transacties[betaling.id] = betaling
+        return betaling.id
+    
+    def controleer_betaling(self, betaling_id):
+        # Controleren of betaling bestaat en geldig is
+        if betaling_id in self.transacties:
+            betaling = self.transacties[betaling_id]
+            return f"Betaling is geldig: {betaling}"
+        else:
+            return "Betaling niet gevonden of ongeldig."
+    
+    def betwist_betaling(self, betaling_id):
+        # Betwisting van betaling
+        if betaling_id in self.transacties:
+            betaling = self.transacties[betaling_id]
+            if betaling.betwist:
+                return "Betaling is al betwist."
+            betaling.betwist = True
+            betaling.status = "Betwist"
+            # Stuur notificatie naar admin (voorbeeld)
+            return f"Betaling {betaling_id} is betwist. Admin moet deze controleren."
+        else:
+            return "Betaling niet gevonden om te betwisten."
+    
+    def annuleer_betaling(self, betaling_id):
+        # Annuleer betaling indien betwist
+        if betaling_id in self.transacties:
+            betaling = self.transacties[betaling_id]
+            if betaling.status == "Betwist":
+                betaling.status = "Geannuleerd"
+                # Herstel de saldo's van de gebruikers
+                self.gebruikers_saldo[betaling.verzender] += betaling.bedrag
+                self.gebruikers_saldo[betaling.ontvanger] -= betaling.bedrag
+                return f"Betaling geannuleerd: {betaling}"
+            else:
+                return "Betaling is niet betwist, annuleren is niet mogelijk."
+        else:
+            return "Betaling niet gevonden om te annuleren."
+
+    def saldo_ophalen(self, gebruiker):
+        # Toon het saldo van de gebruiker
+        return f"{gebruiker} heeft een saldo van: {self.gebruikers_saldo.get(gebruiker, 0)}"
+
+# Voorbeeld van het betalingssysteem
+systeem = Betalingssysteem()
+
+# Voeg gebruikers toe
+systeem.voeg_gebruiker_toe("Jan Jansen", 500)
+systeem.voeg_gebruiker_toe("Piet Pietersen", 200)
+
+# Maak een betaling
+betaling_id = systeem.maak_betaling("Jan Jansen", "Piet Pietersen", 100)
+print(systeem.controleer_betaling(betaling_id))
+
+# Haal saldo op
+print(systeem.saldo_ophalen("Jan Jansen"))
+print(systeem.saldo_ophalen("Piet Pietersen"))
+
+# Betwist betaling
+print(systeem.betwist_betaling(betaling_id))
+
+# Annuleer betaling (bij betwisting)
+print(systeem.annuleer_betaling(betaling_id))
+
+# Haal saldo op na annulering
+print(systeem.saldo_ophalen("Jan Jansen"))
+print(systeem.saldo_ophalen("Piet Pietersen"))
